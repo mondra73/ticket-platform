@@ -7,17 +7,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sector {
-  id         Int      @id @default(autoincrement())
-  name       String
-  price      Float
-  totalStock Int
-  soldStock  Int      @default(0)
-  createdAt  DateTime @default(now())
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  EXPIRED
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id              Int       @id @default(autoincrement())
+  name            String
+  lastName        String
+  dni             String    @unique
+  email           String    @unique
+  username        String    @unique
+  password        String
+  createdAt       DateTime  @default(now())
+  lastLogin       DateTime?
+
+  orders          Order[]
+}
+
+model Location {
+  id              Int      @id @default(autoincrement())
+  name            String
+  address         String
+  maxCapacity     Int
+
+  events          Event[]
+}
+
+model Event {
+  id              Int       @id @default(autoincrement())
+  name            String
+  startDate       DateTime
+  createdAt       DateTime  @default(now())
+
+  locationId      Int
+  location        Location  @relation(fields: [locationId], references: [id])
+
+  sectors         Sector[]
+}
+
+model Sector {
+  id              Int      @id @default(autoincrement())
+  name            String
+  price           Float
+  totalStock      Int
+  soldStock       Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  eventId         Int
+  event           Event    @relation(fields: [eventId], references: [id])
+
+  orderItems      OrderItem[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  status          OrderStatus @default(PENDING)
+  totalAmount     Float
+  expiresAt       DateTime
+  createdAt       DateTime    @default(now())
+
+  userId          Int
+  user            User        @relation(fields: [userId], references: [id])
+
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id              Int     @id @default(autoincrement())
+  quantity        Int
+  unitPrice       Float
+
+  orderId         Int
+  order           Order   @relation(fields: [orderId], references: [id])
+
+  sectorId        Int
+  sector          Sector  @relation(fields: [sectorId], references: [id])
+
+  tickets         Ticket[]
+}
+
+model Ticket {
+  id              Int      @id @default(autoincrement())
+  qrCode          String   @unique
+  validated       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  orderItemId     Int
+  orderItem       OrderItem @relation(fields: [orderItemId], references: [id])
 }
