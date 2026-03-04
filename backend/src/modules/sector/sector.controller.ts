@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { SectorService } from './sector.service';
 
 @Controller('sectors')
@@ -12,6 +19,7 @@ export class SectorController {
       name: string;
       price: number;
       totalStock: number;
+      eventId: number;
     },
   ) {
     return this.sectorService.create(body);
@@ -20,5 +28,10 @@ export class SectorController {
   @Get()
   findAll() {
     return this.sectorService.findAll();
+  }
+
+  @Get('event/:eventId')
+  findByEvent(@Param('eventId', ParseIntPipe) eventId: number) {
+    return this.sectorService.findByEvent(eventId);
   }
 }

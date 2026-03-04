@@ -91,3 +91,11 @@
     -Simula pago
     -Confirma
 6. DB actualiza stock
+
+
+
+Location
+   └── Event
+          └── Sector
+                 └── OrderItem
+                        └── Ticket

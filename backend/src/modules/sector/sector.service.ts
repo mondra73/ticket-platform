@@ -9,13 +9,29 @@ export class SectorService {
     name: string;
     price: number;
     totalStock: number;
+    eventId: number;
   }) {
     return this.prisma.sector.create({
-      data,
+      data: {
+        name: data.name,
+        price: data.price,
+        totalStock: data.totalStock,
+        eventId: data.eventId, // ⚠️ ahora es number directo
+      },
     });
   }
 
   async findAll() {
-    return this.prisma.sector.findMany();
+    return this.prisma.sector.findMany({
+      include: {
+        event: true,
+      },
+    });
+  }
+
+  async findByEvent(eventId: number) {
+    return this.prisma.sector.findMany({
+      where: { eventId },
+    });
   }
 }
