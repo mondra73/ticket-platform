@@ -6,6 +6,6 @@ import { PrismaModule } from '../../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [LocationController],
-  providers: [LocationService],
+  providers: [LocationService]
 })
 export class LocationModule {}
