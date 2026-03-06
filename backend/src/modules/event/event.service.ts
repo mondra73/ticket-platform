@@ -9,7 +9,7 @@ export class EventService {
     return this.prisma.event.create({
       data: {
         name: data.name,
-        startDate: data.startDate, // <-- Antes decía 'date'
+        startDate: data.startDate,
         locationId: data.locationId,
       },
     });

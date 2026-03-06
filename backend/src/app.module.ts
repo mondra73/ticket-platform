@@ -5,10 +5,11 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SectorModule } from './modules/sector/sector.module';
 import { EventModule } from './modules/event/event.module';
 import { LocationModule } from './modules/location/location.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, SectorModule, EventModule, LocationModule],
+  imports: [PrismaModule, SectorModule, EventModule, LocationModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}

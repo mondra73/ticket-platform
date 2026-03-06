@@ -6,23 +6,17 @@ import {
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
+
 import { SectorService } from './sector.service';
+import { CreateSectorDto } from './dto/create-sector.dto';
 
 @Controller('sectors')
 export class SectorController {
   constructor(private readonly sectorService: SectorService) {}
 
   @Post()
-  create(
-    @Body()
-    body: {
-      name: string;
-      price: number;
-      totalStock: number;
-      eventId: number;
-    },
-  ) {
-    return this.sectorService.create(body);
+  create(@Body() dto: CreateSectorDto) {
+    return this.sectorService.create(dto);
   }
 
   @Get()
