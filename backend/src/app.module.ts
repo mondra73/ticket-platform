@@ -8,9 +8,24 @@ import { LocationModule } from './modules/location/location.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { QueueModule } from './modules/queue/queue.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
-  imports: [PrismaModule, SectorModule, EventModule, LocationModule, AuthModule, OrderModule, PaymentModule],
+  imports: [
+    RedisModule.forRoot({
+      type: 'single',
+      url: process.env.REDIS_URL ?? 'redis://localhost:6379'
+    }),
+    PrismaModule,
+    SectorModule,
+    EventModule,
+    LocationModule,
+    AuthModule,
+    OrderModule,
+    PaymentModule,
+    QueueModule
+  ],
   controllers: [AppController],
   providers: [AppService]
 })
