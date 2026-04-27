@@ -10,6 +10,7 @@ import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     AuthModule,
     OrderModule,
     PaymentModule,
-    QueueModule
+    QueueModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService]
