@@ -1,0 +1,69 @@
+graph TD
+    %% ====== FRONTEND ======
+    subgraph Frontend["🖥️ Frontend - React 19 + Vite + Tailwind"]
+        UI[Interfaz de Usuario]
+        ChatWidget[Widget de Chat IA]
+        WebSocketClient[Socket.IO Client]
+    end
+
+    %% ====== BACKEND ======
+    subgraph Backend["⚙️ Backend - NestJS :3000"]
+        direction TB
+        AppModule[AppModule<br/>Módulo Principal]
+        
+        subgraph Modulos["Módulos de Negocio"]
+            Auth[Auth<br/>JWT + bcrypt]
+            Events[Events]
+            Locations[Locations]
+            Sectors[Sectors]
+            Orders[Orders]
+            Payments[Payments<br/>Simulador]
+            Queue[Queue<br/>Cola Virtual]
+            Chat[Chat<br/>Asistente IA]
+        end
+        
+        PrismaService[PrismaService<br/>ORM]
+    end
+
+    %% ====== INFRAESTRUCTURA ======
+    subgraph Infraestructura["🐳 Docker Environment"]
+        PostgreSQL[("PostgreSQL 16<br/>tickets_db")]
+        Redis[("Redis 7<br/>Caché + Colas")]
+    end
+
+    %% ====== EXTERNOS ======
+    GroqAPI[☁️ Groq API<br/>Llama 3 70B]
+
+    %% ====== CONEXIONES FRONTEND → BACKEND ======
+    UI -->|"HTTP REST /api/*"| Auth
+    UI -->|"HTTP REST /api/events"| Events
+    UI -->|"HTTP REST /api/orders"| Orders
+    UI -->|"HTTP REST /api/payments"| Payments
+    UI -->|"WebSocket (Socket.IO)"| WebSocketClient
+    WebSocketClient <-->|"Eventos: join_queue, leave_queue"| Queue
+
+    ChatWidget -->|"POST /chat"| Chat
+    Chat -->|"HTTPS + API Key"| GroqAPI
+
+    %% ====== CONEXIONES INTERNAS ======
+    Auth --> PrismaService
+    Events --> PrismaService
+    Locations --> PrismaService
+    Sectors --> PrismaService
+    Orders --> PrismaService
+    Payments --> PrismaService
+    Queue --> PrismaService
+
+    PrismaService -->|"Consultas SQL"| PostgreSQL
+    Queue <-->|"Comandos FIFO (ioredis)"| Redis
+    Auth -.->|"Caché de sesiones"| Redis
+
+    %% ====== ESTILOS ======
+    style Frontend fill:#1a1a2e,stroke:#e94560,color:#fff
+    style Backend fill:#16213e,stroke:#0f3460,color:#fff
+    style Modulos fill:#1a1a2e,stroke:#0f3460,color:#fff
+    style Infraestructura fill:#0f3460,stroke:#533483,color:#fff
+    style GroqAPI fill:#e94560,stroke:#fff,color:#fff
+    style PostgreSQL fill:#336791,stroke:#fff,color:#fff
+    style Redis fill:#DC382D,stroke:#fff,color:#fff
+    style PrismaService fill:#2D3748,stroke:#fff,color:#fff
