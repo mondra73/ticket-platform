@@ -6,6 +6,7 @@ import EventsPage from './pages/EventsPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import MyOrdersPage from './pages/MyOrdersPage';
+import ChatWidget from './components/ChatWidget';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -80,6 +81,7 @@ export default function App() {
           } />
         </Routes>
       </div>
+      <ChatWidget />
     </div>
   );
 }
