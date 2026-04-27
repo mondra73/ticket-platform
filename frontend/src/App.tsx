@@ -7,6 +7,7 @@ import EventDetailPage from './pages/EventDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ChatWidget from './components/ChatWidget';
+import QueuePage from './pages/QueuePage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -31,10 +32,16 @@ function Navbar() {
             TicketPlatform
           </span>
         </Link>
-
         <div className="flex items-center gap-3 sm:gap-4">
           {isAuthenticated ? (
             <>
+              <span className="hidden sm:block text-xs text-muted uppercase tracking-wider">
+                {user?.name}
+              </span>
+              <Link to="/queue"
+                className="text-xs uppercase tracking-wider text-text hover:text-amber transition-colors">
+                Demo Cola
+              </Link>
               <Link to="/my-orders"
                 className="text-xs uppercase tracking-wider text-text hover:text-amber transition-colors">
                 Mis entradas
@@ -66,7 +73,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-surface">
       <Navbar />
-      <div style={{ paddingTop: '64px', paddingLeft: '64px', paddingRight: '32px' }}>
+      <main style={{ paddingTop: '64px', paddingLeft: '64px', paddingRight: '32px' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/events" />} />
           <Route path="/login" element={<LoginPage />} />
@@ -79,8 +86,9 @@ export default function App() {
           <Route path="/my-orders" element={
             <PrivateRoute><MyOrdersPage /></PrivateRoute>
           } />
+          <Route path="/queue" element={<QueuePage />} />
         </Routes>
-      </div>
+      </main>
       <ChatWidget />
     </div>
   );
