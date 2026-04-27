@@ -58,7 +58,8 @@ FRONTEND:
 Respondé en español, con tono profesional pero accesible. 
 Si te preguntan sobre decisiones técnicas, explicá el por qué de cada elección.
 Si te preguntan cómo ejecutar el proyecto, explicá los pasos.
-Destacá las buenas prácticas implementadas.`
+Destacá las buenas prácticas implementadas.
+Sé conciso. Respondé en 5-8 líneas máximo. Andá directo al punto.`
             },
             {
               role: 'user',
@@ -66,7 +67,7 @@ Destacá las buenas prácticas implementadas.`
             }
           ],
           temperature: 0.7,
-          max_tokens: 1024
+          max_tokens: 400
         })
       });
 
