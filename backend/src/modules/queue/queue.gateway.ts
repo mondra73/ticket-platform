@@ -51,6 +51,14 @@ export class QueueGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('queue_update', { totalInQueue: queueLength });
   }
 
+  @SubscribeMessage('clear_queue')
+async handleClearQueue(@ConnectedSocket() client: Socket) {
+  await this.queueService.clearQueue();
+  const queueLength = await this.queueService.getQueueLength();
+  this.server.emit('queue_update', { totalInQueue: queueLength });
+  client.emit('queue_cleared', { message: 'Cola limpiada' });
+}
+
   @SubscribeMessage('simulate_load')
   async handleSimulateLoad(
     @ConnectedSocket() client: Socket,
