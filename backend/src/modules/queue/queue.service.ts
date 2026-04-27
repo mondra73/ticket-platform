@@ -4,7 +4,9 @@ import type Redis from 'ioredis';
 
 const QUEUE_KEY = 'ticket_queue';
 const SESSION_PREFIX = 'queue_session:';
+const ACTIVE_PREFIX = 'queue_active:';
 const SESSION_TTL = 600;
+const ACTIVE_TTL = 120; // 2 minutos para comprar
 
 export interface QueueSession {
   userId: number;
@@ -41,6 +43,7 @@ export class QueueService {
   async leaveQueue(userId: number): Promise<void> {
     await this.redis.zrem(QUEUE_KEY, String(userId));
     await this.redis.del(`${SESSION_PREFIX}${userId}`);
+    await this.redis.del(`${ACTIVE_PREFIX}${userId}`);
   }
 
   async getQueueLength(): Promise<number> {
@@ -63,5 +66,39 @@ export class QueueService {
 
   async clearQueue(): Promise<void> {
     await this.redis.del(QUEUE_KEY);
+  }
+
+  // Despacha al primer usuario de la cola
+  async dispatchNext(): Promise<number | null> {
+    const next = await this.redis.zrange(QUEUE_KEY, 0, 0);
+    if (!next || next.length === 0) return null;
+
+    const userId = Number(next[0]);
+
+    // Marcarlo como activo con TTL de 2 minutos
+    await this.redis.setex(
+      `${ACTIVE_PREFIX}${userId}`,
+      ACTIVE_TTL,
+      JSON.stringify({ userId, dispatchedAt: Date.now() })
+    );
+
+    // Removerlo de la cola
+    await this.redis.zrem(QUEUE_KEY, String(userId));
+    await this.redis.del(`${SESSION_PREFIX}${userId}`);
+
+    return userId;
+  }
+
+  async isUserDispatched(userId: number): Promise<boolean> {
+    const active = await this.redis.get(`${ACTIVE_PREFIX}${userId}`);
+    return active !== null;
+  }
+
+  async getActiveTTL(userId: number): Promise<number> {
+    return this.redis.ttl(`${ACTIVE_PREFIX}${userId}`);
+  }
+
+  async clearActiveSession(userId: number): Promise<void> {
+    await this.redis.del(`${ACTIVE_PREFIX}${userId}`);
   }
 }

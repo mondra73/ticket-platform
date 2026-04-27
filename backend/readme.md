@@ -162,29 +162,42 @@ GROQ_API_KEY=tu_api_key_de_groq
 | GET | `/orders/my-orders` | Historial del usuario | ✓ |
 | POST | `/payments` | Procesar pago | ✓ |
 
-### WebSocket events
 | Evento (emit) | Descripción |
 |--------------|-------------|
 | `join_queue` | Unirse a la cola virtual |
 | `leave_queue` | Salir de la cola |
 | `simulate_load` | Simular N usuarios en cola |
+| `clear_queue` | Limpiar toda la cola |
+| `register_user` | Registrar socket del usuario autenticado |
 
 | Evento (on) | Descripción |
 |------------|-------------|
 | `queue_position` | Tu posición actual en la cola |
 | `queue_update` | Total de usuarios en cola |
 | `simulation_done` | Simulación completada |
+| `queue_cleared` | Cola limpiada |
+| `your_turn` | Es tu turno — incluye countdown en segundos |
+| `queue_left` | Confirmación de salida de cola |
 
 ---
 
-## Simulador de carga
+## Simulador de cola — `/queue`
 
-El frontend incluye un panel donde podés simular hasta **1.000.000 de usuarios** intentando comprar entradas simultáneamente. Esto permite visualizar:
+El frontend incluye una página dedicada donde podés demostrar el sistema bajo carga. Accedé a `http://localhost:5173/queue` para:
 
-- El sistema de cola virtual en acción
-- La distribución de posiciones en Redis
-- Las actualizaciones en tiempo real via WebSocket
-- El comportamiento del backend bajo alta demanda
+- Simular hasta **1.000.000 de usuarios** en cola con un click
+- Ver el contador de usuarios actualizarse en tiempo real via WebSocket
+- Unirte a la cola y observar tu posición descender a medida que el sistema despacha usuarios
+- Ver el banner **"¡Es tu turno!"** cuando llegás al frente, con countdown de 2 minutos para comprar
+- Limpiar la cola y reiniciar la demo
+
+**Flujo recomendado para la demo:**
+1. Logueate en el sistema
+2. Entrá a `/queue`
+3. Apretá "Unirme a la cola" → quedás en posición #1
+4. Simulá 10 usuarios → pasan a posiciones #2 al #11 detrás tuyo
+5. Esperá 10 segundos → el sistema te despacha automáticamente
+6. Aparece el banner con el countdown y el botón para ir a comprar
 
 ---
 
