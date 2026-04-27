@@ -23,7 +23,7 @@ export default function EventsPage() {
   }, []);
 
   if (loading) return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+    <div className="flex items-center justify-center py-20">
       <div className="text-muted uppercase tracking-widest text-sm animate-pulse">
         Cargando eventos...
       </div>
@@ -31,7 +31,7 @@ export default function EventsPage() {
   );
 
   if (error) return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-6">
+    <div className="flex items-center justify-center py-20 px-4">
       <div className="text-center space-y-6">
         <div className="text-5xl">⚠️</div>
         <p className="text-red-400 text-lg">{error}</p>
@@ -46,36 +46,29 @@ export default function EventsPage() {
   );
 
   return (
-    <div>
-      {/* Hero */}
-      <div className="relative border-b border-border overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber/5 to-transparent pointer-events-none" />
-        
-        <div className="relative max-w-6xl mx-auto px-6 py-16 sm:py-20">
-          <div className="inline-flex items-center gap-2 bg-amber/10 border border-amber/20 rounded-full px-4 py-1.5 mb-6">
-            <div className="w-1.5 h-1.5 bg-amber rounded-full animate-pulse" />
-            <span className="text-amber text-[11px] font-semibold uppercase tracking-[0.25em]">
-              Plataforma de entradas
-            </span>
-          </div>
-
-          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black uppercase text-white leading-[0.95] mb-5 tracking-tight">
-            Eventos en{' '}
-            <span className="relative inline-block">
-              <span className="relative z-10 text-amber">vivo</span>
-              <span className="absolute -bottom-1 left-0 w-full h-2 sm:h-3 bg-amber/20 -rotate-1 rounded" />
-            </span>
-          </h1>
-
-          <p className="font-body text-muted text-base sm:text-lg max-w-xl leading-relaxed font-light">
-            Comprá tus entradas de forma rápida y segura. Sistema de cola virtual para alta demanda.
-          </p>
+    <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-8 sm:py-12">
+      {/* Header */}
+      <div className="mb-8 sm:mb-12">
+        <div className="inline-flex items-center gap-2 bg-amber/10 border border-amber/20 rounded-full px-4 py-1.5 mb-6">
+          <div className="w-1.5 h-1.5 bg-amber rounded-full animate-pulse" />
+          <span className="text-amber text-[11px] font-semibold uppercase tracking-[0.25em]">
+            Plataforma de entradas
+          </span>
         </div>
+
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black uppercase text-white leading-[0.95] mb-4">
+          Eventos en{' '}
+          <span className="text-amber">vivo</span>
+        </h1>
+
+        <p className="text-muted text-base sm:text-lg max-w-xl">
+          Comprá tus entradas de forma rápida y segura. Sistema de cola virtual para alta demanda.
+        </p>
       </div>
 
       {/* Events list */}
-      <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-3">
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 gap-3">
           <div>
             <span className="text-amber text-xs font-semibold uppercase tracking-[0.2em] mb-1.5 block">
               Calendario
@@ -90,14 +83,14 @@ export default function EventsPage() {
         </div>
 
         {events.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {events.map((event) => {
               const eventDate = new Date(event.startDate);
               return (
                 <div
                   key={event.id}
                   onClick={() => navigate(`/events/${event.id}`)}
-                  className="group relative bg-surface-2/50 backdrop-blur-sm border border-border/50 rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 cursor-pointer hover:bg-surface-2 hover:border-amber/30 transition-all duration-300"
+                  className="group bg-surface-2/50 backdrop-blur-sm border border-border/50 rounded-xl sm:rounded-2xl p-5 sm:p-6 cursor-pointer hover:bg-surface-2 hover:border-amber/30 transition-all duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
                     <div className="flex-1 min-w-0 space-y-3 sm:space-y-4">
@@ -127,8 +120,8 @@ export default function EventsPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <p className="text-sm font-light truncate">
-                          {event.location.name}
-                          <span className="hidden sm:inline"> · {event.location.address}</span>
+                          {event.location?.name || 'Ubicación'}
+                          <span className="hidden sm:inline"> · {event.location?.address || 'Dirección'}</span>
                         </p>
                       </div>
                     </div>
