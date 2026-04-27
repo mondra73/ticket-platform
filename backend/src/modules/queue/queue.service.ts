@@ -19,26 +19,43 @@ export class QueueService {
   constructor(@InjectRedis() private readonly redis: Redis) {}
 
   async joinQueue(userId: number): Promise<{ position: number; estimatedWait: number }> {
-    const sessionKey = `${SESSION_PREFIX}${userId}`;
-    const existing = await this.redis.get(sessionKey);
-
-    if (existing) {
-      const position = await this.getPosition(userId);
-      return { position, estimatedWait: position * 30 };
-    }
-
-    const now = Date.now();
-    await this.redis.zadd(QUEUE_KEY, now, String(userId));
-    await this.redis.setex(sessionKey, SESSION_TTL, JSON.stringify({ userId, joinedAt: now }));
-
-    const position = await this.getPosition(userId);
+  const sessionKey = `${SESSION_PREFIX}${userId}`;
+  
+  // Verificar si ya está en la cola (por sesión o por sorted set)
+  const existing = await this.redis.get(sessionKey);
+  const rank = await this.redis.zrank(QUEUE_KEY, String(userId));
+  
+  if (existing || rank !== null) {
+    const position = rank !== null ? rank + 1 : await this.getPosition(userId);
     return { position, estimatedWait: position * 30 };
   }
 
+  // Si no existe, crear la entrada
+  const now = Date.now();
+  await this.redis.zadd(QUEUE_KEY, now, String(userId));
+  await this.redis.setex(sessionKey, SESSION_TTL, JSON.stringify({ userId, joinedAt: now }));
+
+  const position = await this.getPosition(userId);
+  return { position, estimatedWait: position * 30 };
+}
+
   async getPosition(userId: number): Promise<number> {
-    const rank = await this.redis.zrank(QUEUE_KEY, String(userId));
-    return rank === null ? -1 : rank + 1;
+  const rank = await this.redis.zrank(QUEUE_KEY, String(userId));
+  if (rank === null) {
+    // Verificar si el usuario tiene sesión activa
+    const hasSession = await this.redis.get(`${SESSION_PREFIX}${userId}`);
+    if (hasSession) {
+      // Si tiene sesión pero no está en el sorted set, es un error de consistencia
+      // Lo reinsertamos y devolvemos la última posición + 1
+      const queueLength = await this.getQueueLength();
+      const now = Date.now();
+      await this.redis.zadd(QUEUE_KEY, now + queueLength, String(userId));
+      return queueLength + 1;
+    }
+    return -1; // No está en la cola ni tiene sesión
   }
+  return rank + 1;
+}
 
   async leaveQueue(userId: number): Promise<void> {
     await this.redis.zrem(QUEUE_KEY, String(userId));
